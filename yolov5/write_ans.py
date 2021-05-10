@@ -65,7 +65,7 @@ def detect(opt):
             if img.ndimension() == 3:
                 img = img.unsqueeze(0)
 
-        
+
             # Inference
             t1 = time_synchronized()
             pred = model(img, augment=opt.augment)[0]
@@ -98,7 +98,7 @@ def detect(opt):
                     for c in det[:, -1].unique():
                         n = (det[:, -1] == c).sum()  # detections per class
                         s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
-
+                    
                     # Write results
                     for *xyxy, conf, cls in reversed(det):
                         # cls is group id
@@ -106,7 +106,7 @@ def detect(opt):
                             # print(txt_path , xyxy.tolist())
                             # xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                             # line = (cls, *xywh, conf) if opt.save_conf else (cls, *xywh)  # label format
-                            
+
                             points = []
                             f.write(str(re.split('_|\.',txt_path)[1])+',')
                             # for num in xyxy:
@@ -121,7 +121,24 @@ def detect(opt):
                             for num in points:
                                 f.write(f"{int(num)},")
                             f.write(f'{conf}\n')
-                            # f.write(('%g ' * len(line)).rstrip() % line + '\n')
+
+                            # cheating way for cutting chinease word
+                            
+                            # if (int(cls)==0):
+                            #     h = xyxy[3] - xyxy[1]
+                            #     w = xyxy[2] - xyxy[0]
+                            #     if(w>h):
+                            #         dist = (w-h)/4
+                            #         for i in range(4):
+                            #             f.write(str(re.split('_|\.',txt_path)[1])+',')
+                            #             f.write(f"{int(xyxy[0]+dist*i)},{int(xyxy[1])},{int(xyxy[0]+dist*(i+1))},{int(xyxy[1])},{int(xyxy[0]+dist*(i+1))},{int(xyxy[3])},{int(xyxy[0]+dist*i)},{int(xyxy[3])},")
+                            #             f.write(f'0.5\n')
+                            #     else:
+                            #         dist = (h-w)/4
+                            #         for i in range(4):
+                            #             f.write(str(re.split('_|\.',txt_path)[1])+',')
+                            #             f.write(f"{int(xyxy[0])},{int(xyxy[1]+dist*i)},{int(xyxy[2])},{int(xyxy[1]+dist*i)},{int(xyxy[2])},{int(xyxy[1]+dist*(i+1))},{int(xyxy[0])},{int(xyxy[1]+dist*(i+1))},")
+                            #             f.write(f'0.5\n')
 
                         if save_img or opt.save_crop or view_img:  # Add bbox to image
                             c = int(cls)  # integer class
