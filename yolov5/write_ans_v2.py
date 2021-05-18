@@ -1,12 +1,12 @@
 import argparse
-import time
+import time,os
 from pathlib import Path
 import re
-import cv2,os
+import cv2
 import torch
 import torch.backends.cudnn as cudnn
 from numpy import random
-
+import numpy as np
 from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
@@ -14,6 +14,102 @@ from utils.general import check_img_size, check_requirements, check_imshow, non_
 from utils.plots import colors, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
 
+def extract_peek_ranges_from_array(array_vals, minimun_val=500, minimun_range=20):
+    # print(array_vals)
+    start_i = None
+    end_i = None
+    peek_ranges = []
+    #enumerate() 函數用於將數據對象組合為一個索引序列，同時列出數據和數據下標
+    for i, val in enumerate(array_vals):
+        if val > minimun_val and start_i is None:
+            start_i = i
+        elif val > minimun_val and start_i is not None:
+            pass
+        elif val < minimun_val and start_i is not None:
+            end_i = i
+            if end_i - start_i >= minimun_range:
+                peek_ranges.append((start_i, end_i))
+            start_i = None
+            end_i = None
+        elif val < minimun_val and start_i is None:
+            pass
+        else:
+            raise ValueError("cannot parse this case...")
+    return peek_ranges
+
+def x_crop(img,xyxy):
+    # img = cv2.imread('data/images/img_3.jpg')
+    c_img = img[int(xyxy[1]):int(xyxy[3]),int(xyxy[0]):int(xyxy[2])] # [y1:y2,x1:x2]
+    x_l  = int(xyxy[0])
+    y_up = int(xyxy[1])
+    
+    gray_img = cv2.cvtColor(c_img, cv2.COLOR_BGR2GRAY)
+    bilateral = cv2.bilateralFilter(gray_img, 11, 75, 75)
+    blur = cv2.GaussianBlur(bilateral,(5,5),1)
+    adaptive_threshold = cv2.adaptiveThreshold(
+        blur,
+        255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY_INV,11, 2)
+
+    vertical_sum = np.sum(adaptive_threshold, axis=0)
+    horizontal_sum = np.sum(adaptive_threshold, axis=1)
+
+    line_seg_adaptive_threshold = np.copy(adaptive_threshold)
+    peek_ranges = extract_peek_ranges_from_array(vertical_sum)
+    # print("peek:",peek_ranges)
+    small_blocks=[]
+    for i, peek_range in enumerate(peek_ranges):
+        x = peek_range[0]
+        y = 0
+        w = peek_range[1] - x
+        h = line_seg_adaptive_threshold.shape[0]
+        pt1 = (x_l + x, y_up + y)
+        pt2 = (x_l + x + w, y_up + y + h)
+        # print(pt1 ,";", pt2,"\n")
+        small_blocks.append(pt1)
+        small_blocks.append(pt2)
+        #cv2.rectangle(影像, 頂點座標, 對向頂點座標, 顏色, 線條寬度)
+        cv2.rectangle(img, pt1, pt2, (0,0,255),2)
+    return small_blocks
+
+
+def y_crop(img,xyxy):
+    # img = cv2.imread('data/images/img_3.jpg')
+    c_img = img[int(xyxy[1]):int(xyxy[3]),int(xyxy[0]):int(xyxy[2])] # [y1:y2,x1:x2]
+    x_l  = int(xyxy[0])
+    y_up = int(xyxy[1])
+    
+    gray_img = cv2.cvtColor(c_img, cv2.COLOR_BGR2GRAY)
+    bilateral = cv2.bilateralFilter(gray_img, 11, 75, 75)
+    blur = cv2.GaussianBlur(bilateral,(5,5),1) # 7, 7 ,1
+    adaptive_threshold = cv2.adaptiveThreshold(
+        blur,
+        255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY_INV,11, 2)# 3,2
+
+    vertical_sum = np.sum(adaptive_threshold, axis=0)
+    horizontal_sum = np.sum(adaptive_threshold, axis=1)
+
+    line_seg_adaptive_threshold = np.copy(adaptive_threshold)
+    peek_ranges = extract_peek_ranges_from_array(vertical_sum)
+    small_blocks=[]
+    # print("rect positions: ")
+    for i, peek_range in enumerate(peek_ranges):
+        x = 0
+        y = peek_range[0]
+        w = line_seg_adaptive_threshold.shape[1]
+        h = peek_range[1] - y
+        pt1 = (x_l + x, y_up + y)
+        pt2 = (x_l + x + w, y_up + y + h)
+        # print(pt1 ,";", pt2,"\n")
+        small_blocks.append(pt1)
+        small_blocks.append(pt2)
+        #cv2.rectangle(影像, 頂點座標, 對向頂點座標, 顏色, 線條寬度)
+        cv2.rectangle(img, pt1, pt2, (0,0,255),4)
+        # print(pt1,pt2)
+    return small_blocks
 
 def detect(opt):
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
@@ -110,35 +206,36 @@ def detect(opt):
                             points = []
                             f.write(str(re.split('_|\.',txt_path)[1])+',')
                             # for num in xyxy:
-                            points.append(xyxy[0])# x_up
-                            points.append(xyxy[1])# y_l
+                            points.append(xyxy[0])# x_l
+                            points.append(xyxy[1])# y_up
                             points.append(xyxy[2])
-                            points.append(xyxy[1])# y_r
+                            points.append(xyxy[1])# y_d
                             points.append(xyxy[2])
-                            points.append(xyxy[3])# y_r
-                            points.append(xyxy[0])# x_down
-                            points.append(xyxy[3])# y_l
+                            points.append(xyxy[3])# y_d
+                            points.append(xyxy[0])# x_l
+                            points.append(xyxy[3])# y_d
                             for num in points:
                                 f.write(f"{int(num)},")
                             f.write(f'{conf}\n')
 
-                            # cheating way for cutting chinease word
                             
-                            # if (int(cls)==0):
-                            #     h = xyxy[3] - xyxy[1]
-                            #     w = xyxy[2] - xyxy[0]
-                            #     if(w>h):
-                            #         dist = (w-h)/4
-                            #         for i in range(4):
-                            #             f.write(str(re.split('_|\.',txt_path)[1])+',')
-                            #             f.write(f"{int(xyxy[0]+dist*i)},{int(xyxy[1])},{int(xyxy[0]+dist*(i+1))},{int(xyxy[1])},{int(xyxy[0]+dist*(i+1))},{int(xyxy[3])},{int(xyxy[0]+dist*i)},{int(xyxy[3])},")
-                            #             f.write(f'0.5\n')
-                            #     else:
-                            #         dist = (h-w)/4
-                            #         for i in range(4):
-                            #             f.write(str(re.split('_|\.',txt_path)[1])+',')
-                            #             f.write(f"{int(xyxy[0])},{int(xyxy[1]+dist*i)},{int(xyxy[2])},{int(xyxy[1]+dist*i)},{int(xyxy[2])},{int(xyxy[1]+dist*(i+1))},{int(xyxy[0])},{int(xyxy[1]+dist*(i+1))},")
-                            #             f.write(f'0.5\n')
+                            if (int(cls)==0):
+                                h = xyxy[3] - xyxy[1]
+                                w = xyxy[2] - xyxy[0]
+                                if(w>h):
+                                    # run x_crop
+                                    small_blocks = x_crop(im0,xyxy)
+                                    for a,b in zip(small_blocks[0::2], small_blocks[1::2]): # data[0::2] means create subset collection of elements that (index % 2 == 0)
+                                        f.write(str(re.split('_|\.',txt_path)[1])+',')
+                                        f.write(f"{a[0]},{a[1]},{b[0]},{a[1]},{b[0]},{b[1]},{a[0]},{b[1]},")
+                                        f.write(f'0.5\n')
+                                else:
+                                    # run y_crop
+                                    small_blocks = y_crop(im0,xyxy)
+                                    for a,b in zip(small_blocks[0::2], small_blocks[1::2]): # data[0::2] means create subset collection of elements that (index % 2 == 0)
+                                        f.write(str(re.split('_|\.',txt_path)[1])+',')
+                                        f.write(f"{a[0]},{a[1]},{b[0]},{a[1]},{b[0]},{b[1]},{a[0]},{b[1]},")
+                                        f.write(f'0.5\n')
 
                         if save_img or opt.save_crop or view_img:  # Add bbox to image
                             c = int(cls)  # integer class

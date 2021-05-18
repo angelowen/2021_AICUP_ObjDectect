@@ -609,10 +609,10 @@ if __name__ == '__main__':
                     hyp[k] = float(x[i + 7] * v[i])  # mutate
 
             # Constrain to limits
-            for k, v in meta.items():
-                hyp[k] = max(hyp[k], v[1])  # lower limit
-                hyp[k] = min(hyp[k], v[2])  # upper limit
-                hyp[k] = round(hyp[k], 5)  # significant digits
+            # for k, v in meta.items():
+            #     hyp[k] = max(hyp[k], v[1])  # lower limit
+            #     hyp[k] = min(hyp[k], v[2])  # upper limit
+            #     hyp[k] = round(hyp[k], 5)  # significant digits
 
             # Train mutation
             results = train(hyp.copy(), opt, device)
