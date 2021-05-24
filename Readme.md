@@ -16,19 +16,29 @@
 
 ## Train
 cd yolov5
-python train.py --img 1280 --batch 4 --epochs 200 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt
-python train.py --epochs 10 --data ../datasets/annotations/setting.yaml  --weights ../yolov5x6.pt --cache --evolve
+python  train.py --img 1280  --batch 4 --epochs 200 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt 
+
+
+nohup  python  train.py --img 1365 --rect  --batch 4 --epochs 200 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt --device 1 &> output1.txt &
+
 ## Test
-python write_ans.py --source data/images --weights runs/train/exp6/weights/best.pt --conf 0.49 --save-txt --save-conf
+python write_ans.py --source data/images --weights runs/train/exp16/weights/best.pt --conf 0.6 --save-txt --save-conf --img-size 1365
 
 ## Final Result
 yolov5/answer.csv
 
 ## Testing skills
-1. augmented inference -> did not get better result in this case
+1. augmented inference 
 2. [Model Ensembling](https://github.com/ultralytics/yolov5/issues/318)
 3. [Model Puning](https://github.com/ultralytics/yolov5/issues/304) 
-
+---
+4. --update 
+5. new model -> 0.65 && other < 0.9  && ensembling
 ## others
-iou-thres
-
+iou_thres -> did not get better
+model: exp 6,8,16
+exp6 : conf > 0.6 && img_size1280 && w/o not care<0.9 other<0.7
+exp16 : conf > 0.6 && img_size1365 && w/o not care<0.9 other<0.8
+## Hand
+8 12 16 77 79 100 114 118 120 123 133 156 204 987
+997

@@ -12,7 +12,7 @@ from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
     scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
 from utils.plots import colors, plot_one_box
-from utils.torch_utils import select_device, load_classifier, time_synchronized
+from utils.torch_utils import select_device, load_classifier, time_synchronized,prune
 
 
 def detect(opt):
@@ -32,6 +32,7 @@ def detect(opt):
 
     # Load model
     model = attempt_load(weights, map_location=device)  # load FP32 model
+    # prune(model, 0.3)
     stride = int(model.stride.max())  # model stride
     imgsz = check_img_size(imgsz, s=stride)  # check img_size
     names = model.module.names if hasattr(model, 'module') else model.names  # get class names
@@ -105,6 +106,9 @@ def detect(opt):
                     # Write results
                     for *xyxy, conf, cls in reversed(det):
                         # cls is group id
+                        #  not care<0.9 other<0.8 will not  be inclued
+                        if (int(cls)== 6 and conf < 0.9) or (int(cls)==5 and conf < 0.8) :
+                            continue
                         if save_txt:  # Write to file
                         
                             points = []
@@ -121,24 +125,6 @@ def detect(opt):
                             for num in points:
                                 f.write(f"{int(num)},")
                             f.write(f'{conf}\n')
-
-                            # cheating way for cutting chinease word
-                            
-                            # if (int(cls)==0):
-                            #     h = xyxy[3] - xyxy[1]
-                            #     w = xyxy[2] - xyxy[0]
-                            #     if(w>h):
-                            #         dist = (w-h)/4
-                            #         for i in range(4):
-                            #             f.write(str(re.split('_|\.',txt_path)[1])+',')
-                            #             f.write(f"{int(xyxy[0]+dist*i)},{int(xyxy[1])},{int(xyxy[0]+dist*(i+1))},{int(xyxy[1])},{int(xyxy[0]+dist*(i+1))},{int(xyxy[3])},{int(xyxy[0]+dist*i)},{int(xyxy[3])},")
-                            #             f.write(f'0.5\n')
-                            #     else:
-                            #         dist = (h-w)/4
-                            #         for i in range(4):
-                            #             f.write(str(re.split('_|\.',txt_path)[1])+',')
-                            #             f.write(f"{int(xyxy[0])},{int(xyxy[1]+dist*i)},{int(xyxy[2])},{int(xyxy[1]+dist*i)},{int(xyxy[2])},{int(xyxy[1]+dist*(i+1))},{int(xyxy[0])},{int(xyxy[1]+dist*(i+1))},")
-                            #             f.write(f'0.5\n')
 
                         if save_img or opt.save_crop or view_img:  # Add bbox to image
                             c = int(cls)  # integer class
