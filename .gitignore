@@ -1,0 +1,16 @@
+PublicTestDataset.zip
+TrainDataset_0506.zip
+yologt/
+img/
+TrainDataset/
+yolov5/*.txt
+datasets/
+yolov5/runs/*
+yolov5/data/images/
+yolov5/*.git
+yolov5x6.pt
+tmp.py
+*.zip
+yolov5/models/mydataset_models/*
+yolov5/wandb/*
+evolve.txt

@@ -106,8 +106,9 @@ def detect(opt):
                     # Write results
                     for *xyxy, conf, cls in reversed(det):
                         # cls is group id
+                        w = xyxy[2] - xyxy[0]
                         #  not care<0.9 other<0.8 will not  be inclued
-                        if (int(cls)== 6 and conf < 0.9) or (int(cls)==5 and conf < 0.8) :
+                        if ((int(cls)== 0 or int(cls)== 1) and conf < 0.58) or ((int(cls)== 2 or int(cls)== 3) and conf < 0.63) or (int(cls)== 6 and conf < 0.9) or (int(cls)==5 and conf < 0.78) or (int(cls)==5 and conf > 0.8 and w<20) :
                             continue
                         if save_txt:  # Write to file
                         

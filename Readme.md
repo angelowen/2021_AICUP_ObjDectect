@@ -28,10 +28,10 @@ cd yolov5
 python  train.py --img 1280  --batch 4 --epochs 200 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt 
 
 
-nohup  python  train.py --img 1365 --rect  --batch 4 --epochs 200 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt --device 1 &> output1.txt &
+nohup  python  train.py --img 1365 --rect  --batch 4 --epochs 400 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt --device 1 &> output.txt &
 
 ## Test
-python write_ans.py --source data/images --weights runs/train/exp16/weights/best.pt --conf 0.58 --save-txt --save-conf --img-size 1365
+python write_ans.py --source data/images  --weights runs/train/exp6/weights/best.pt runs/train/exp16/weights/best.pt  --conf 0.56 --save-txt --save-conf --img-size 1365
 
 ## Final Result
 yolov5/answer.csv
@@ -66,8 +66,8 @@ Confidence: 為模型對該預測框的信心值，資料型別為浮點數。�
 iou_thres -> did not get better
 model: exp 6,8,16
 exp6 : conf > 0.6 && img_size1280 && w/o not care<0.9 other<0.7
-exp16 : conf > 0.6 && img_size1365 && w/o not care<0.9 other<0.8
-if area too small give up
+exp16 : conf > 0.58 && img_size1365 && w/o not care<0.9 other<0.8
+
 ## Hand
 8 12 16 77 79 100 114 118 120 123 133 156 204 987 349 492
 997
