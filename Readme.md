@@ -20,15 +20,16 @@
 [link](https://github.com/ultralytics/yolov5/wiki/Tips-for-Best-Training-Results)
 1. [Hyperparameter Evolution](https://github.com/ultralytics/yolov5/issues/607)
 2. Epochs. Start with 300 epochs.If overfitting does not occur after 300 epochs, train longer, i.e. 600, 1200 etc epochs.
-3. Image size `--img` 1280 is better
+3. `--multi-scale` when images are diff sizes
 4. Batch size. Use the largest `--batch-size` that your hardware allows for.
+5. `--label-smoothing`
+6. `--quad` 會將一batch從 16x3x640x640 重塑為 4x3x1280x1280，重新排列batch中的馬賽克，it allows for 2x upscaling of some images within the batch (one of the 4 mosaics in each quad is upscaled by 2x, the other 3 mosaics are deleted)，當預測的img-sizes 大於 640，而正常模型在--img 640 上訓練時圖像尺寸大於 640 時性能較差。您可以將 --img 640 --quad 視為以 --img 640 的速度進行訓練的折衷方案，比起在 --img 1280 上訓練時看到的更高的 mAP
 
 ## Train
 cd yolov5
 python  train.py --img 1280  --batch 4 --epochs 200 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt 
 
-
-nohup  python  train.py --img 1365 --rect  --batch 4 --epochs 400 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt --device 1 &> output.txt &
+python  train.py --img 1365 --rect  --batch 4 --epochs 300 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt --device 1 
 
 ## Test
 python write_ans.py --source data/images  --weights runs/train/exp6/weights/best.pt runs/train/exp16/weights/best.pt  --conf 0.56 --save-txt --save-conf --img-size 1365
@@ -59,15 +60,11 @@ Confidence: 為模型對該預測框的信心值，資料型別為浮點數。�
 1. augmented inference 
 2. [Model Ensembling](https://github.com/ultralytics/yolov5/issues/318)
 3. [Model Puning](https://github.com/ultralytics/yolov5/issues/304) 
----
-4. --update 
-5. new model -> 0.65 && other < 0.9  && ensembling
-## others
-iou_thres -> did not get better
-model: exp 6,8,16
-exp6 : conf > 0.6 && img_size1280 && w/o not care<0.9 other<0.7
-exp16 : conf > 0.58 && img_size1365 && w/o not care<0.9 other<0.8
 
-## Hand
-8 12 16 77 79 100 114 118 120 123 133 156 204 987 349 492
-997
+
+## 問題檢討及改進
+1. batch size 只能設2，太大則CUDA OUT OF MEMORY，但預期  batch size 越大越好
+2. 物件抓取到許多過度微小的細節，應統計分析哪些是容易抓錯的物件進行訓練資料的改進
+3. 期望使用Hyperparameter Evolution找出最佳參數
+4. `label-smoothing` and `--quad` 期望被使用
+5. 訓練資料增加
