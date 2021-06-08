@@ -24,7 +24,7 @@
 2. Epochs. Start with 300 epochs.If overfitting does not occur after 300 epochs, train longer, i.e. 600, 1200 etc epochs.
 3. `--multi-scale` when images are diff sizes
 4. Batch size. Use the largest `--batch-size` that your hardware allows for.
-5. `--label-smoothing`
+5. [`--label-smoothing`](https://blog.csdn.net/qq_43211132/article/details/100510113)
 6. `--quad` 會將一batch從 16x3x640x640 重塑為 4x3x1280x1280，重新排列batch中的馬賽克，it allows for 2x upscaling of some images within the batch (one of the 4 mosaics in each quad is upscaled by 2x, the other 3 mosaics are deleted)，當預測的img-sizes 大於 640，而正常模型在--img 640 上訓練時圖像尺寸大於 640 時性能較差。您可以將 --img 640 --quad 視為以 --img 640 的速度進行訓練的折衷方案，比起在 --img 1280 上訓練時看到的更高的 mAP
 
 ## Train
