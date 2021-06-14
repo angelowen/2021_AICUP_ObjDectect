@@ -18,6 +18,8 @@
 4. Add file named "setting.yaml" in datasets/annotations/ and revise it based on your folder
 5. unzip PublicTestDataset.zip and put the images/ to yolov5/data/
 6. download yolov5x6.pt from yolov5 official website
+## 資料放置
+![](https://i.imgur.com/gz5TuEr.png)
 ## Training skills
 [link](https://github.com/ultralytics/yolov5/wiki/Tips-for-Best-Training-Results)
 1. [Hyperparameter Evolution](https://github.com/ultralytics/yolov5/issues/607)
