@@ -1,0 +1,9 @@
+# train and val datasets (image directory or *.txt file with image paths)
+train: ../datasets/annotations/train.txt
+val: ../datasets/annotations/val.txt
+
+# number of classes
+nc: 7
+
+# class names
+names: ['CH_str','CH_char','Eng_Digit_str','CH_Eng_Digit_str','CH_word','Oth','Not_Care']
