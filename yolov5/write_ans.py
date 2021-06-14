@@ -14,6 +14,8 @@ from utils.general import check_img_size, check_requirements, check_imshow, non_
 from utils.plots import colors, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized,prune
 
+Hand = False
+mylabel=['CH_str','CH_char','Eng_Digit_str','CH_Eng_Digit_str','CH_word','Oth','Not_Care']
 
 def detect(opt):
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
@@ -62,6 +64,12 @@ def detect(opt):
     if os.path.isfile(filepath):
         os.remove(filepath)
     with open(filepath, 'a') as f:
+        if Hand:
+            with open('hand.csv', 'r') as fr:
+                Lines = fr.readlines()
+                for line in Lines:
+                    f.write(line)
+
         for path, img, im0s, vid_cap in dataset:
             img = torch.from_numpy(img).to(device)
             img = img.half() if half else img.float()  # uint8 to fp16/32
@@ -81,7 +89,7 @@ def detect(opt):
             # Apply Classifier
             if classify:
                 pred = apply_classifier(pred, modelc, img, im0s)
-
+                       
             # Process detections
             for i, det in enumerate(pred):  # detections per image
                 if webcam:  # batch_size >= 1
@@ -106,10 +114,14 @@ def detect(opt):
                     # Write results
                     for *xyxy, conf, cls in reversed(det):
                         # cls is group id
-                        w = xyxy[2] - xyxy[0]
+                        if(xyxy[3] - xyxy[1]>0):
+                            h = xyxy[3] - xyxy[1]
+                        else:
+                            h = xyxy[1] - xyxy[3]
+
                         #  not care<0.9 other<0.8 will not  be inclued
-                        if ((int(cls)== 0 or int(cls)== 1) and conf < 0.58) or ((int(cls)== 2 or int(cls)== 3) and conf < 0.63) or (int(cls)== 6 and conf < 0.9) or (int(cls)==5 and conf < 0.78) or (int(cls)==5 and conf > 0.8 and w<20) :
-                            continue
+                        if ((int(cls)== 0 or int(cls)== 1) and conf < 0.58) or (int(cls)== 2 and conf < 0.63)  or (int(cls)== 3 and conf < 0.63) or (int(cls)== 6 and conf < 0.9) or(int(cls)==5 and conf < 0.78) or (int(cls)==5 and conf > 0.8 and h<22) :
+                            continue 
                         if save_txt:  # Write to file
                         
                             points = []
