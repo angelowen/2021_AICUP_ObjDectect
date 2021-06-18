@@ -31,7 +31,6 @@
 
 ## Train
 cd yolov5
-python  train.py --img 1280  --batch 4 --epochs 200 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt 
 
 python  train.py --img 1365 --rect  --batch 4 --epochs 300 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt --device 1 
 
