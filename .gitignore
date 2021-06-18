@@ -4,9 +4,14 @@ yologt/
 img/
 TrainDataset/
 yolov5/*.txt
-datasets/
+datasets/images/train/*
+datasets/images/val/*
+datasets/labels/train/*
+datasets/labels/val/*
 yolov5/runs/*
+yolov5/round2/
 yolov5/data/images/
+yolov5/data/public_images/
 yolov5/*.git
 yolov5x6.pt
 tmp.py
