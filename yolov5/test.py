@@ -3,7 +3,7 @@ import json
 import os
 from pathlib import Path
 from threading import Thread
-
+from torchsummary import summary
 import numpy as np
 import torch
 import yaml

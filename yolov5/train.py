@@ -7,7 +7,7 @@ import time
 from copy import deepcopy
 from pathlib import Path
 from threading import Thread
-
+from torchsummary import summary
 import numpy as np
 import torch.distributed as dist
 import torch.nn as nn
@@ -248,7 +248,6 @@ def train(hyp, opt, device, tb_writer=None):
                 f'Starting training for {epochs} epochs...')
     for epoch in range(start_epoch, epochs):  # epoch ------------------------------------------------------------------
         model.train()
-
         # Update image weights (optional)
         if opt.image_weights:
             # Generate indices
