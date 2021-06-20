@@ -6,9 +6,10 @@
 場景文字檢測通常為場景文字辨識的前置步驟，即由畫面的像素中判斷文字出現的位置，以利後續針對該位置辨識可能的文字內容。場景文字檢測直接影響了文字辨識的準確度，本次賽事目標即為定位畫面中肉眼可識的文字位置。場景文字檢測受到許多因素所影響，包括場景中可能出現的多型態文字、多國文字、傾斜招牌文字、不同尺寸文字、外物遮蔽、類文字圖案紋理干擾、光線與陰影等。本賽事的目標場景為台灣市區街景，期望參賽者利用機器學習/深度學習技術，嘗試與開發適當的模型，以確偵測台灣街景畫面中的文字區域。
 
 ![](https://i.imgur.com/wEvuhYW.png)
-## 成果
-### 準確率:0.6544
 
+## Private Leaderboard Rank 6, Accuracy:0.655208
+![](https://i.imgur.com/cDKB1qT.png)
+## Results
 ![](https://i.imgur.com/mhMs7G1.png)
 ![](https://i.imgur.com/byMjpKg.png)
 ![](https://i.imgur.com/mDxUTOT.png)
