@@ -40,7 +40,7 @@ python  train.py --img 1365 --rect  --batch 4 --epochs 300 --data ../datasets/an
 ## Test
 python write_ans.py --source data/images  --weights runs/train/exp6/weights/best.pt runs/train/exp16/weights/best.pt  --conf 0.56 --save-txt --save-conf --img-size 1365
 
-## Final Result
+## Result File
 yolov5/answer.csv
 
 上傳格式說明:

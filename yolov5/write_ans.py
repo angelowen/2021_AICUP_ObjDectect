@@ -62,7 +62,7 @@ def detect(opt):
     filepath = 'answer.csv'
     if os.path.isfile(filepath):
         os.remove(filepath)
-
+    with open(filepath, 'a') as f:
         for path, img, im0s, vid_cap in dataset:
             img = torch.from_numpy(img).to(device)
             img = img.half() if half else img.float()  # uint8 to fp16/32
@@ -70,7 +70,7 @@ def detect(opt):
             if img.ndimension() == 3:
                 img = img.unsqueeze(0)
 
-
+                            
             # Inference
             t1 = time_synchronized()
             pred = model(img, augment=opt.augment)[0]
@@ -82,7 +82,7 @@ def detect(opt):
             # Apply Classifier
             if classify:
                 pred = apply_classifier(pred, modelc, img, im0s)
-                       
+                    
             # Process detections
             for i, det in enumerate(pred):  # detections per image
                 if webcam:  # batch_size >= 1
