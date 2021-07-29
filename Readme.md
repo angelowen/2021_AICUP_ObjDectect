@@ -43,6 +43,7 @@
 
 `python write_ans.py --source data/images  --weights [runs/train/exp6/weights/best.pt] [runs/train/exp16/weights/best.pt]  --conf 0.56 --save-txt --save-conf --img-size 1365`
 
+HINT: you can get the model above in this [link](https://drive.google.com/drive/folders/1S2GMT8otPQG4F_oMNRWjtp8rj9Ud7ZqU?usp=sharing)
 ## Result File
 yolov5/answer.csv
 
