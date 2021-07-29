@@ -8,8 +8,9 @@
 
 ![](https://i.imgur.com/wEvuhYW.png)
 
-## Private Leaderboard Rank 6, Accuracy:0.655208
-![](https://i.imgur.com/cDKB1qT.png)
+## Rank
+![](https://i.imgur.com/tEMjZIN.png)
+![](https://i.imgur.com/W4b6dHf.png)
 ## Results
 ![](https://i.imgur.com/mhMs7G1.png)
 ![](https://i.imgur.com/byMjpKg.png)
@@ -33,12 +34,14 @@
 6. `--quad` 會將一batch從 16x3x640x640 重塑為 4x3x1280x1280，重新排列batch中的馬賽克，it allows for 2x upscaling of some images within the batch (one of the 4 mosaics in each quad is upscaled by 2x, the other 3 mosaics are deleted)，當預測的img-sizes 大於 640，而正常模型在--img 640 上訓練時圖像尺寸大於 640 時性能較差。您可以將 --img 640 --quad 視為以 --img 640 的速度進行訓練的折衷方案，比起在 --img 1280 上訓練時看到的更高的 mAP
 
 ## Train
-cd yolov5
+`cd yolov5`
 
-python  train.py --img 1365 --rect  --batch 4 --epochs 300 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt --device 1 
+`python  train.py --img 1365 --rect  --batch 4 --epochs 300 --data ../datasets/annotations/setting.yaml --weights ../yolov5x6.pt --device 1` 
 
 ## Test
-python write_ans.py --source data/images  --weights runs/train/exp6/weights/best.pt runs/train/exp16/weights/best.pt  --conf 0.56 --save-txt --save-conf --img-size 1365
+使用ensemble:
+
+`python write_ans.py --source data/images  --weights [runs/train/exp6/weights/best.pt] [runs/train/exp16/weights/best.pt]  --conf 0.56 --save-txt --save-conf --img-size 1365`
 
 ## Result File
 yolov5/answer.csv
