@@ -9,8 +9,8 @@
 ![](https://i.imgur.com/wEvuhYW.png)
 
 ## Rank
+![](https://i.imgur.com/trLG8TC.png)
 ![](https://i.imgur.com/tEMjZIN.png)
-![](https://i.imgur.com/W4b6dHf.png)
 ## Results
 ![](https://i.imgur.com/mhMs7G1.png)
 ![](https://i.imgur.com/byMjpKg.png)
