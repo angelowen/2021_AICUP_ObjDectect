@@ -34,7 +34,7 @@ with open('./datasets/annotations/train.txt', 'w') as fw:
         fw.write('../datasets/images/train/'+name+'\n')
 with open('./datasets/annotations/val.txt', 'w') as fw:
     for name in val_FileNames:
-        fw.write('../datasets/images/train/' +'/val/'+name+'\n')
+        fw.write('../datasets/images/val/'+name+'\n')
 
 train_labels = [yologt+'/'+ name.split('.')[0]+".txt" for name in train_FileNames.tolist()]
 val_labels = [yologt+'/' + name.split('.')[0]+".txt" for name in val_FileNames.tolist()]
